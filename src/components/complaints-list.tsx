@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
@@ -92,21 +93,76 @@ Representative: ${c.representativeName}
   };
 
   const exportToPDF = () => {
-    const doc = new jsPDF();
-    doc.text("Complaints Report", 14, 16);
-    (doc as any).autoTable({
-      head: [["ID", "Date", "Status", "User", "Product", "Problem"]],
-      body: complaints.map(c => [
-        c.id,
-        format(new Date(c.createdAt), 'P'),
-        c.status,
-        c.userName,
-        c.productType,
-        { content: c.problemDescription, styles: { cellWidth: 'wrap' } }
-      ]),
-      startY: 20,
+    const doc = new jsPDF({ orientation: 'landscape' });
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const margin = 15;
+
+    doc.setFontSize(20);
+    doc.text("Complaints Report", margin, 20);
+
+    complaints.forEach((c, index) => {
+        if (index > 0) {
+            doc.addPage();
+        }
+        
+        doc.setFontSize(14);
+        doc.text(`Complaint #${c.id}`, margin, 35);
+        doc.setFontSize(10);
+        doc.setTextColor(100);
+        doc.text(`Date: ${format(new Date(c.createdAt), 'PPp')}`, margin, 42);
+        doc.text(`Status: ${c.status}`, pageWidth / 2, 42);
+        doc.setTextColor(0);
+
+        (doc as any).autoTable({
+            startY: 50,
+            head: [['Field', 'Value']],
+            body: [
+                ['User Name', c.userName],
+                ['Room Number', c.roomNumber],
+                ['Section', c.section],
+                ['Product Type', c.productType],
+                ['Product Serial Number', c.productSerialNumber],
+                [{ content: 'Problem Description', styles: { fontStyle: 'bold' } }, c.problemDescription],
+                ['Representative Name', c.representativeName],
+                [{ content: 'Solution Provided', styles: { fontStyle: 'bold' } }, c.solution],
+            ],
+            theme: 'grid',
+            headStyles: { fillColor: [231, 48, 48] },
+            styles: {
+                cellPadding: 3,
+                fontSize: 10,
+                valign: 'middle'
+            },
+            columnStyles: {
+                0: { fontStyle: 'bold', cellWidth: 50 },
+                1: { cellWidth: 'auto' }
+            }
+        });
+
+        const finalY = (doc as any).lastAutoTable.finalY;
+
+        doc.setFontSize(12);
+        doc.text("Signatures", margin, finalY + 15);
+        
+        const sigWidth = 80;
+        const sigHeight = 40;
+        
+        // User Signature
+        doc.setFontSize(10);
+        doc.text("User Signature", margin, finalY + 25);
+        doc.addImage(c.userSignature, 'PNG', margin, finalY + 28, sigWidth, sigHeight);
+        doc.rect(margin, finalY + 28, sigWidth, sigHeight);
+
+
+        // Representative Signature
+        doc.text("Representative Signature", pageWidth / 2, finalY + 25);
+        doc.addImage(c.representativeSignature, 'PNG', pageWidth / 2, finalY + 28, sigWidth, sigHeight);
+        doc.rect(pageWidth / 2, finalY + 28, sigWidth, sigHeight);
+
     });
-    doc.save('complaints.pdf');
+
+    doc.save('complaints-report.pdf');
   };
 
   if (loading) {
