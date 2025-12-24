@@ -66,36 +66,36 @@ export function ComplaintDetailsDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-2xl">
+      <DialogContent className="sm:max-w-2xl w-[95vw] rounded-lg">
         <DialogHeader>
-          <DialogTitle className="flex justify-between items-center">
-            <span>Complaint Details #{complaint.id}</span>
-            <Badge variant={currentStatus === 'Closed' ? 'destructive' : 'default'}>{currentStatus}</Badge>
+          <DialogTitle className="flex justify-between items-start">
+            <span className="break-all">Complaint Details #{complaint.id}</span>
+            <Badge variant={currentStatus === 'Closed' ? 'destructive' : 'default'} className="ml-2 shrink-0">{currentStatus}</Badge>
           </DialogTitle>
           <DialogDescription>
             Filed on {format(new Date(complaint.createdAt), "PPP 'at' p")}
           </DialogDescription>
         </DialogHeader>
         
-        <div className="grid gap-6 py-4">
+        <div className="grid gap-6 py-4 max-h-[70vh] overflow-y-auto pr-4">
             {/* User Details */}
             <div>
                 <h3 className="text-lg font-semibold mb-2">User & Problem Information</h3>
-                <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 text-sm">
                     <div className="font-medium">User Name:</div>
-                    <div>{complaint.userName}</div>
+                    <div className="break-words">{complaint.userName}</div>
 
                     <div className="font-medium">Room Number:</div>
-                    <div>{complaint.roomNumber}</div>
+                    <div className="break-words">{complaint.roomNumber}</div>
 
                     <div className="font-medium">Section:</div>
-                    <div>{complaint.section}</div>
+                    <div className="break-words">{complaint.section}</div>
 
                     <div className="font-medium">CPU Serial Number:</div>
-                    <div>{complaint.cpuSerialNumber}</div>
+                    <div className="break-words">{complaint.cpuSerialNumber}</div>
 
-                    <div className="col-span-2 font-medium mt-2">Problem Description:</div>
-                    <div className="col-span-2 p-2 bg-muted rounded-md text-muted-foreground">{complaint.problemDescription}</div>
+                    <div className="col-span-1 sm:col-span-2 font-medium mt-2">Problem Description:</div>
+                    <div className="col-span-1 sm:col-span-2 p-2 bg-muted rounded-md text-muted-foreground break-words whitespace-pre-wrap">{complaint.problemDescription}</div>
                 </div>
             </div>
 
@@ -104,12 +104,12 @@ export function ComplaintDetailsDialog({
             {/* Representative Details */}
             <div>
                 <h3 className="text-lg font-semibold mb-2">Representative & Solution</h3>
-                <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 text-sm">
                     <div className="font-medium">Representative Name:</div>
-                    <div>{complaint.representativeName}</div>
+                    <div className="break-words">{complaint.representativeName}</div>
                     
-                    <div className="col-span-2 font-medium mt-2">Solution Provided:</div>
-                    <div className="col-span-2 p-2 bg-muted rounded-md text-muted-foreground">{complaint.solution}</div>
+                    <div className="col-span-1 sm:col-span-2 font-medium mt-2">Solution Provided:</div>
+                    <div className="col-span-1 sm:col-span-2 p-2 bg-muted rounded-md text-muted-foreground break-words whitespace-pre-wrap">{complaint.solution}</div>
                 </div>
             </div>
 
@@ -118,23 +118,27 @@ export function ComplaintDetailsDialog({
             {/* Signatures */}
             <div>
                  <h3 className="text-lg font-semibold mb-2">Signatures</h3>
-                 <div className="flex gap-4 justify-around">
+                 <div className="flex flex-col sm:flex-row gap-4 justify-around">
                     <div className="flex flex-col items-center gap-2">
                         <p className="font-medium">User Signature</p>
-                        <Image src={complaint.userSignature} alt="User Signature" width={200} height={100} className="border bg-white rounded-md"/>
+                        <div className="w-[200px] h-[100px] border bg-white rounded-md flex items-center justify-center">
+                            <Image src={complaint.userSignature} alt="User Signature" width={200} height={100} className="object-contain w-full h-full"/>
+                        </div>
                     </div>
                     <div className="flex flex-col items-center gap-2">
                         <p className="font-medium">Representative Signature</p>
-                        <Image src={complaint.representativeSignature} alt="Representative Signature" width={200} height={100} className="border bg-white rounded-md"/>
+                        <div className="w-[200px] h-[100px] border bg-white rounded-md flex items-center justify-center">
+                            <Image src={complaint.representativeSignature} alt="Representative Signature" width={200} height={100} className="object-contain w-full h-full"/>
+                        </div>
                     </div>
                  </div>
             </div>
         </div>
 
-        <DialogFooter className="sm:justify-between items-center">
-            <div className="flex items-center gap-2">
+        <DialogFooter className="flex-col sm:flex-row sm:justify-between items-center gap-4 sm:gap-0 pt-4 border-t">
+            <div className="flex items-center gap-2 w-full sm:w-auto">
                 <Select value={currentStatus} onValueChange={(value: ComplaintStatus) => handleStatusChange(value)} disabled={isUpdating}>
-                    <SelectTrigger className="w-[180px]">
+                    <SelectTrigger className="w-full sm:w-[180px]">
                         <SelectValue placeholder="Change status..." />
                     </SelectTrigger>
                     <SelectContent>
@@ -144,7 +148,7 @@ export function ComplaintDetailsDialog({
                 </Select>
                 {isUpdating && <Loader2 className="h-4 w-4 animate-spin" />}
             </div>
-            <Button type="button" variant="secondary" onClick={() => onOpenChange(false)}>
+            <Button type="button" variant="secondary" onClick={() => onOpenChange(false)} className="w-full sm:w-auto">
                 Close
             </Button>
         </DialogFooter>
