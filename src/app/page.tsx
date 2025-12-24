@@ -1,7 +1,5 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ComplaintForm } from "@/components/complaint-form"
-import { ComplaintsList } from "@/components/complaints-list"
-import { FilePenLine, ListChecks } from "lucide-react"
+
+import { HomePageClient } from "@/components/home-page-client";
 
 export default function Home() {
   return (
@@ -15,24 +13,7 @@ export default function Home() {
         </p>
       </div>
 
-      <Tabs defaultValue="new-complaint" className="w-full">
-        <TabsList className="grid w-full grid-cols-2 max-w-lg mx-auto">
-          <TabsTrigger value="new-complaint">
-            <FilePenLine className="mr-2 h-4 w-4" />
-            New Complaint
-          </TabsTrigger>
-          <TabsTrigger value="view-complaints">
-            <ListChecks className="mr-2 h-4 w-4" />
-            View Complaints
-          </TabsTrigger>
-        </TabsList>
-        <TabsContent value="new-complaint" className="mt-6">
-          <ComplaintForm />
-        </TabsContent>
-        <TabsContent value="view-complaints" className="mt-6">
-          <ComplaintsList />
-        </TabsContent>
-      </Tabs>
+      <HomePageClient />
     </main>
   );
 }

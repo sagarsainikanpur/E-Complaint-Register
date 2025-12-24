@@ -5,7 +5,6 @@ import { useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useRouter } from "next/navigation";
-import { useFormStatus } from 'react-dom';
 
 
 import { submitComplaint } from "@/app/actions";
@@ -19,6 +18,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Separator } from "@/components/ui/separator";
 import { Loader2, User, Wrench, ShieldCheck, Signature, Package, PackageSearch } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useFormState, useFormStatus } from "react-dom";
 
 const complaintSchema = z.object({
   userName: z.string().min(1, "User name is required."),
@@ -82,8 +82,6 @@ export function ComplaintForm() {
       representativeSignature: "",
     },
   });
-
-  const { isSubmitting } = form.formState;
 
   const onSubmit: SubmitHandler<ComplaintFormValues> = async (data) => {
     const formData = new FormData();
