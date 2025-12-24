@@ -91,8 +91,11 @@ export function ComplaintDetailsDialog({
                     <div className="font-medium">Section:</div>
                     <div className="break-words">{complaint.section}</div>
 
-                    <div className="font-medium">CPU Serial Number:</div>
-                    <div className="break-words">{complaint.cpuSerialNumber}</div>
+                    <div className="font-medium">Product Type:</div>
+                    <div className="break-words">{complaint.productType}</div>
+
+                    <div className="font-medium">Product Serial Number:</div>
+                    <div className="break-words">{complaint.productSerialNumber}</div>
 
                     <div className="col-span-1 sm:col-span-2 font-medium mt-2">Problem Description:</div>
                     <div className="col-span-1 sm:col-span-2 p-2 bg-muted rounded-md text-muted-foreground break-words whitespace-pre-wrap">{complaint.problemDescription}</div>
@@ -122,13 +125,13 @@ export function ComplaintDetailsDialog({
                     <div className="flex flex-col items-center gap-2">
                         <p className="font-medium">User Signature</p>
                         <div className="w-[200px] h-[100px] border bg-white rounded-md flex items-center justify-center">
-                            <Image src={complaint.userSignature} alt="User Signature" width={200} height={100} className="object-contain w-full h-full"/>
+                            <Image src={complaint.userSignature} alt="User Signature" width={200} height={100} className="object-contain w-full h-full p-1"/>
                         </div>
                     </div>
                     <div className="flex flex-col items-center gap-2">
                         <p className="font-medium">Representative Signature</p>
                         <div className="w-[200px] h-[100px] border bg-white rounded-md flex items-center justify-center">
-                            <Image src={complaint.representativeSignature} alt="Representative Signature" width={200} height={100} className="object-contain w-full h-full"/>
+                            <Image src={complaint.representativeSignature} alt="Representative Signature" width={200} height={100} className="object-contain w-full h-full p-1"/>
                         </div>
                     </div>
                  </div>

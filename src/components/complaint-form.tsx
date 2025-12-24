@@ -17,13 +17,15 @@ import { Textarea } from "@/components/ui/textarea";
 import { SignaturePad } from "@/components/signature-pad";
 import { useToast } from "@/hooks/use-toast";
 import { Separator } from "@/components/ui/separator";
-import { Loader2, User, Wrench, ShieldCheck, Signature } from "lucide-react";
+import { Loader2, User, Wrench, ShieldCheck, Signature, Package, PackageSearch } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const complaintSchema = z.object({
   userName: z.string().min(1, "User name is required."),
   roomNumber: z.string().min(1, "Room number is required."),
   section: z.string().min(1, "Section is required."),
-  cpuSerialNumber: z.string().min(1, "CPU Serial Number is required."),
+  productType: z.string({ required_error: "Product type is required." }).min(1, "Product type is required."),
+  productSerialNumber: z.string().min(1, "Product Serial Number is required."),
   problemDescription: z.string().min(10, "Problem description must be at least 10 characters."),
   userSignature: z.string({ required_error: "User signature is required." }).min(1, "User signature is required."),
   representativeName: z.string().min(1, "Representative name is required."),
@@ -71,7 +73,8 @@ export function ComplaintForm() {
       userName: "",
       roomNumber: "",
       section: "",
-      cpuSerialNumber: "",
+      productType: "",
+      productSerialNumber: "",
       problemDescription: "",
       userSignature: "",
       representativeName: "",
@@ -116,7 +119,7 @@ export function ComplaintForm() {
             <CardDescription>Enter the user's information and describe the problem.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid md:grid-cols-3 gap-4">
+            <div className="grid md:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
                 name="userName"
@@ -143,7 +146,8 @@ export function ComplaintForm() {
                   </FormItem>
                 )}
               />
-              <FormField
+            </div>
+             <FormField
                 control={form.control}
                 name="section"
                 render={({ field }) => (
@@ -156,20 +160,50 @@ export function ComplaintForm() {
                   </FormItem>
                 )}
               />
+            <Separator />
+             <div className="grid md:grid-cols-2 gap-4">
+                <FormField
+                    control={form.control}
+                    name="productType"
+                    render={({ field }) => (
+                        <FormItem>
+                        <FormLabel className="flex items-center gap-2"><Package /> Product Type</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                            <SelectTrigger>
+                                <SelectValue placeholder="Select a product type" />
+                            </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                                <SelectItem value="CPU">CPU</SelectItem>
+                                <SelectItem value="Printer">Printer</SelectItem>
+                                <SelectItem value="UPS">UPS</SelectItem>
+                                <SelectItem value="Laptop">Laptop</SelectItem>
+                                <SelectItem value="Keyboard">Keyboard</SelectItem>
+                                <SelectItem value="Mouse">Mouse</SelectItem>
+                                <SelectItem value="RAM">RAM</SelectItem>
+                                <SelectItem value="Monitor">Monitor</SelectItem>
+                                <SelectItem value="Other">Other</SelectItem>
+                            </SelectContent>
+                        </Select>
+                        <FormMessage />
+                        </FormItem>
+                    )}
+                    />
+                <FormField
+                control={form.control}
+                name="productSerialNumber"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel className="flex items-center gap-2"><PackageSearch /> Product Serial Number</FormLabel>
+                    <FormControl>
+                        <Input placeholder="e.g., SN123456789" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
             </div>
-            <FormField
-              control={form.control}
-              name="cpuSerialNumber"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>CPU Serial Number</FormLabel>
-                  <FormControl>
-                    <Input placeholder="e.g., SN123456789" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
             <FormField
               control={form.control}
               name="problemDescription"

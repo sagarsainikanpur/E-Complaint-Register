@@ -10,7 +10,8 @@ const complaintSchema = z.object({
   userName: z.string().min(1, "User name is required."),
   roomNumber: z.string().min(1, "Room number is required."),
   section: z.string().min(1, "Section is required."),
-  cpuSerialNumber: z.string().min(1, "CPU Serial Number is required."),
+  productType: z.string().min(1, "Product type is required."),
+  productSerialNumber: z.string().min(1, "Product Serial Number is required."),
   problemDescription: z.string().min(10, "Problem description must be at least 10 characters."),
   userSignature: z.string().min(1, "User signature is required."),
   representativeName: z.string().min(1, "Representative name is required."),
@@ -45,7 +46,7 @@ export async function submitComplaint(
   }
 
   try {
-    await dbAddComplaint(validatedFields.data);
+    await dbAddComplaint(validatedFields.data as any);
     revalidatePath('/');
     return { success: true, message: "Complaint submitted successfully!" };
   } catch (error) {

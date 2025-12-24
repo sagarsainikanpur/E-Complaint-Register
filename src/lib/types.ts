@@ -5,7 +5,8 @@ export type Complaint = {
   userName: string;
   roomNumber: string;
   section: string;
-  cpuSerialNumber: string;
+  productType: string;
+  productSerialNumber: string;
   problemDescription: string;
   userSignature: string; // base64 data URL
   representativeName: string;

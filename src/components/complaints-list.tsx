@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { getComplaints } from "@/app/actions";
 import type { Complaint } from "@/lib/types";
 import {
@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import Image from "next/image";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { format } from 'date-fns';
 import { ComplaintDetailsDialog } from "./complaint-details-dialog";
@@ -38,7 +37,7 @@ export function ComplaintsList() {
   }, []);
 
   const exportToCSV = () => {
-    const headers = ["ID", "Date", "Status", "User Name", "Room", "Section", "CPU S/N", "Problem", "Solution", "Representative"];
+    const headers = ["ID", "Date", "Status", "User Name", "Room", "Section", "Product Type", "Product S/N", "Problem", "Solution", "Representative"];
     const rows = complaints.map(c => [
       c.id,
       format(new Date(c.createdAt), 'PPp'),
@@ -46,7 +45,8 @@ export function ComplaintsList() {
       c.userName,
       c.roomNumber,
       c.section,
-      c.cpuSerialNumber,
+      c.productType,
+      c.productSerialNumber,
       `"${c.problemDescription.replace(/"/g, '""')}"`,
       `"${c.solution.replace(/"/g, '""')}"`,
       c.representativeName,
@@ -73,7 +73,8 @@ Status: ${c.status}
 User: ${c.userName}
 Room: ${c.roomNumber}
 Section: ${c.section}
-CPU S/N: ${c.cpuSerialNumber}
+Product Type: ${c.productType}
+Product S/N: ${c.productSerialNumber}
 Problem: ${c.problemDescription}
 Solution: ${c.solution}
 Representative: ${c.representativeName}
@@ -94,13 +95,13 @@ Representative: ${c.representativeName}
     const doc = new jsPDF();
     doc.text("Complaints Report", 14, 16);
     (doc as any).autoTable({
-      head: [["ID", "Date", "Status", "User", "Room", "Problem"]],
+      head: [["ID", "Date", "Status", "User", "Product", "Problem"]],
       body: complaints.map(c => [
         c.id,
         format(new Date(c.createdAt), 'P'),
         c.status,
         c.userName,
-        c.roomNumber,
+        c.productType,
         { content: c.problemDescription, styles: { cellWidth: 'wrap' } }
       ]),
       startY: 20,
@@ -136,9 +137,9 @@ Representative: ${c.representativeName}
 
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
+      <CardHeader className="flex flex-col md:flex-row items-center justify-between gap-4">
         <CardTitle>Submitted Complaints</CardTitle>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap justify-center">
             <Button variant="outline" size="sm" onClick={exportToCSV}><Download className="mr-2 h-4 w-4" /> CSV</Button>
             <Button variant="outline" size="sm" onClick={exportToTXT}><Download className="mr-2 h-4 w-4" /> TXT</Button>
             <Button variant="outline" size="sm" onClick={exportToPDF}><Download className="mr-2 h-4 w-4" /> PDF</Button>
@@ -153,9 +154,10 @@ Representative: ${c.representativeName}
                 <TableHead>Status</TableHead>
                 <TableHead className="w-[150px]">Date</TableHead>
                 <TableHead>User Name</TableHead>
+                <TableHead>Product Type</TableHead>
+                <TableHead>Product S/N</TableHead>
                 <TableHead>Room</TableHead>
                 <TableHead>Section</TableHead>
-                <TableHead>CPU S/N</TableHead>
                 <TableHead>Problem</TableHead>
               </TableRow>
             </TableHeader>
@@ -172,9 +174,10 @@ Representative: ${c.representativeName}
                   </TableCell>
                   <TableCell>{format(new Date(complaint.createdAt), 'PPp')}</TableCell>
                   <TableCell>{complaint.userName}</TableCell>
+                  <TableCell>{complaint.productType}</TableCell>
+                  <TableCell>{complaint.productSerialNumber}</TableCell>
                   <TableCell>{complaint.roomNumber}</TableCell>
                   <TableCell>{complaint.section}</TableCell>
-                  <TableCell>{complaint.cpuSerialNumber}</TableCell>
                   <TableCell className="max-w-xs truncate">{complaint.problemDescription}</TableCell>
                 </TableRow>
               ))}
