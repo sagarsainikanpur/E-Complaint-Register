@@ -1,3 +1,5 @@
+export type ComplaintStatus = 'Open' | 'Closed';
+
 export type Complaint = {
   id: string;
   userName: string;
@@ -10,4 +12,5 @@ export type Complaint = {
   solution: string;
   representativeSignature: string; // base64 data URL
   createdAt: string;
+  status: ComplaintStatus;
 };

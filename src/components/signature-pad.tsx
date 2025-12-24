@@ -15,7 +15,7 @@ export const SignaturePad = forwardRef<HTMLDivElement, SignaturePadProps>(
   ({ onChange, value, className }, ref) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [isDrawing, setIsDrawing] = useState(false);
-    const [hasSigned, setHasSigned] = useState(false);
+    const [hasSigned, setHasSigned] = useState(!!value);
 
     const getPosition = (event: MouseEvent | TouchEvent) => {
       if (!canvasRef.current) return null;
@@ -34,6 +34,16 @@ export const SignaturePad = forwardRef<HTMLDivElement, SignaturePadProps>(
       }
       return null;
     };
+    
+    const
+     clearCanvas = () => {
+        const canvas = canvasRef.current;
+        const context = canvas?.getContext('2d');
+        if (canvas && context) {
+            context.clearRect(0, 0, canvas.width, canvas.height);
+        }
+    }
+
 
     const startDrawing = (event: MouseEvent | TouchEvent) => {
       const pos = getPosition(event);
@@ -44,7 +54,7 @@ export const SignaturePad = forwardRef<HTMLDivElement, SignaturePadProps>(
       context.beginPath();
       context.moveTo(pos.x, pos.y);
       setIsDrawing(true);
-      setHasSigned(true);
+      if (!hasSigned) setHasSigned(true);
     };
 
     const draw = (event: MouseEvent | TouchEvent) => {
@@ -60,20 +70,16 @@ export const SignaturePad = forwardRef<HTMLDivElement, SignaturePadProps>(
 
     const stopDrawing = () => {
       const context = canvasRef.current?.getContext('2d');
-      if (!context) return;
+      if (!context || !isDrawing) return;
       context.closePath();
       setIsDrawing(false);
       onChange(canvasRef.current?.toDataURL('image/png') || '');
     };
 
     const handleClear = () => {
-      const canvas = canvasRef.current;
-      const context = canvas?.getContext('2d');
-      if (canvas && context) {
-        context.clearRect(0, 0, canvas.width, canvas.height);
-        onChange('');
-        setHasSigned(false);
-      }
+      clearCanvas();
+      onChange('');
+      setHasSigned(false);
     };
     
     useEffect(() => {
@@ -95,14 +101,25 @@ export const SignaturePad = forwardRef<HTMLDivElement, SignaturePadProps>(
         context.lineCap = 'round';
         context.lineJoin = 'round';
 
+        // Redraw initial signature if provided
+        if (value) {
+          const img = new Image();
+          img.onload = () => {
+            clearCanvas();
+            context.drawImage(img, 0, 0, canvas.width / dpr, canvas.height / dpr);
+          };
+          img.src = value;
+        }
+
+
         // Add event listeners
         canvas.addEventListener('mousedown', startDrawing);
         canvas.addEventListener('mousemove', draw);
         canvas.addEventListener('mouseup', stopDrawing);
         canvas.addEventListener('mouseleave', stopDrawing);
         
-        canvas.addEventListener('touchstart', startDrawing);
-        canvas.addEventListener('touchmove', draw);
+        canvas.addEventListener('touchstart', startDrawing, { passive: false });
+        canvas.addEventListener('touchmove', draw, { passive: false });
         canvas.addEventListener('touchend', stopDrawing);
 
         return () => {
@@ -115,8 +132,26 @@ export const SignaturePad = forwardRef<HTMLDivElement, SignaturePadProps>(
             canvas.removeEventListener('touchmove', draw);
             canvas.removeEventListener('touchend', stopDrawing);
         };
-        // Re-run effect only when isDrawing changes, to re-attach stopDrawing with correct state
+    }, [isDrawing, value]);
+
+    // Prevent scrolling on touch devices while drawing
+    useEffect(() => {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      
+      const preventScroll = (e: TouchEvent) => {
+        if (isDrawing) {
+          e.preventDefault();
+        }
+      };
+
+      canvas.addEventListener('touchmove', preventScroll, { passive: false });
+      return () => {
+        canvas.removeEventListener('touchmove', preventScroll);
+      }
+
     }, [isDrawing]);
+
 
     return (
       <div className={cn("relative w-full", className)} ref={ref}>

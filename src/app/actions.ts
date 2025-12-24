@@ -2,8 +2,8 @@
 "use server";
 
 import { revalidatePath } from 'next/cache';
-import { addComplaint as dbAddComplaint, getAllComplaints as dbGetAllComplaints } from '@/lib/data';
-import type { Complaint } from '@/lib/types';
+import { addComplaint as dbAddComplaint, getAllComplaints as dbGetAllComplaints, updateComplaintStatus as dbUpdateComplaintStatus } from '@/lib/data';
+import type { Complaint, ComplaintStatus } from '@/lib/types';
 import { z } from 'zod';
 
 const complaintSchema = z.object({
@@ -51,5 +51,16 @@ export async function submitComplaint(
   } catch (error) {
     console.error(error);
     return { success: false, message: "An unexpected error occurred on the server." };
+  }
+}
+
+export async function updateComplaintStatus(complaintId: string, status: ComplaintStatus) {
+  try {
+    await dbUpdateComplaintStatus(complaintId, status);
+    revalidatePath('/');
+    return { success: true, message: 'Status updated successfully' };
+  } catch (error) {
+    console.error(error);
+    return { success: false, message: 'Failed to update status' };
   }
 }
